@@ -1,21 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define minResA 14
+#define minResB 11
+#define minResC 14
+#define minResD 18
 
 /*Allocation Matrix*/
 int allocation[6][4]= { {2,1,3,3},
-                        {2,3,1,1},
+                        {2,3,1,2},
                         {3,3,3,1},
-                        {2,1,3,3},
-                        {3,2,2,4},
+                        {2,1,3,4},
+                        {3,2,2,5},
                         {2,1,2,3}};
-
 
 /*Max Matrix*/
 int max[6][4]=      {   {7,3,4,5},
-                        {8,6,2,1},
+                        {8,6,2,4},
                         {9,5,5,6},
-                        {6,4,6,3},
-                        {8,3,2,4},
+                        {6,4,6,6},
+                        {8,3,2,6},
                         {8,3,2,3}};
 
 /*Need Matrix*/
@@ -29,10 +32,18 @@ int need[6][4]=     {   {0,0,0,0},
 /*Available Matrix*/
 int available[4]=       {0,0,0,0};     
 
+/*Sequence Variable: To record possible execution sequence*/
+int safesequence[6] =   {0,0,0,0,0,0};  //Safe sequence matrix records the sequence of process completion
+int sequence = 0;                       //Sequence variable is a counter that helps with sequencing the sequence arrays
+
+/*Unsafe process matrix: To record processes that are incomplete*/
+int unsafeprocess[6] = {1,2,3,4,5,6};  //Unsafe process matrix checks which processes are incomplete
+
+/*Initialize function*/
 int Calculation();          //Function to check between Need and Availability, and adjust the array accordingly
 int checkstate(int safe);   //Function to check the state of the system 
 void printmatrix();         //Function to print all the matrix
-
+int validateInput(int input, int min);
 
 int main(){
     
@@ -60,21 +71,29 @@ int main(){
     int j = 0;
 
     /*Let user know the minimum input*/
-    printf("Type A needs to be larger than 14\n");
-    printf("Type B needs to be larger than 11\n");
-    printf("Type C needs to be larger than 14\n");
-    printf("Type D needs to be larger than 15\n");
+    printf("Type A needs to be larger than %d\n", minResA);
+    printf("Type B needs to be larger than %d\n", minResB);
+    printf("Type C needs to be larger than %d\n", minResC);
+    printf("Type D needs to be larger than %d\n", minResD);
     printf("\n");
 
-    /*Get user input*/
-    printf("Enter resource A\n");
+
+    /* Get user input*/
+    printf("\nEnter resource A(Must be larger than %d)\n", minResA);
     scanf("%d", &resourcea);
-    printf("Enter resource B\n");
+    validateInput(resourcea, minResA);
+
+    printf("\nEnter resource B(Must be larger than %d)\n", minResB);
     scanf("%d", &resourceb);
-    printf("Enter resource C\n");
+    validateInput(resourceb, minResB);
+
+    printf("\nEnter resource C(Must be larger than %d)\n", minResC);
     scanf("%d", &resourcec);
-    printf("Enter resource D\n");
+    validateInput(resourcec, minResC);
+
+    printf("\nEnter resource D(Must be larger than %d)\n", minResD);
     scanf("%d", &resourced);
+    validateInput(resourced, minResD);
 
     /*Caculating Need matrix    */ 
     /*Need = Max - Allocation   */
@@ -119,19 +138,36 @@ int main(){
         printf("\nUnsafe state\n");
         printmatrix();
         printf("\nUnsafe state\n");
+        
+        /*Print out processes that still required resources*/
+        printf("Processes that need resource:\n");
+        for (i = 0; i < 6; i++)
+        {
+            if (unsafeprocess[i]>0){
+                printf("P%d, ",unsafeprocess[i]);
+            }    
+        }
+        printf("does not have enough resource.");   
     }
 
     /*Print safe state*/
     if (safe == 2){                 //safe == 2, System is in an unsafe state
-        printf("\nSafe state");
+        printf("\nSafe state\n");
+        
+        /*Print out possible sequence*/
+        printf("Possible sequence:\n");
+        for (i = 0; i < 5; i++)
+        {
+            printf("P%d, ",safesequence[i]);
+        }   
+        printf("P%d ",safesequence[5]);
     }
-
 }
 
 int Calculation(){
     /*
     Purpose of calculation function:
-    1. Checks between Need and Availabilty
+    1. Checks between Need and Available resources
     1.1 Should Need be [0,0,0,0] process is completed, pass to 1.2.
     1.2 Else check if there's enough resources to satisfy need: check = need - availability
     1.3 If there's no change return 0 (unsafe state), the system is still running but does not have enough resources to satisfy need.
@@ -163,7 +199,7 @@ int Calculation(){
             check2 = need[i][1] - available[1];                                     //1.2 Check if available resource B satisfy need
             check3 = need[i][2] - available[2];                                     //1.2 Check if available resource C satisfy need
             check4 = need[i][3] - available[3];                                     //1.2 Check if available resource D satisfy need
-            if (check1<1 && check2<1 && check3<1 && check4<1){                      //1.2 Check if there's all resources satisfy need
+            if (check1<1 && check2<1 && check3<1 && check4<1){                      //1.2 Check if all resources satisfy need
                 
                                                                                     //2. Adjusting array accordingly                                                                    
                 available[0] = available[0] + allocation[i][0];                     //2.1 New available resource A = old available + process allocation 
@@ -180,7 +216,12 @@ int Calculation(){
                 need[i][1] = 0;                                                     //2.3 Change Need B for the current processes to 0
                 need[i][2] = 0;                                                     //2.3 Change Need C for the current processes to 0
                 need[i][3] = 0;                                                     //2.3 Change Need D for the current processes to 0
-                
+
+
+                safesequence[sequence] = i+1;                                       // Save the current process execution in the sequence matrix
+                sequence++;                                                         // Ensure that the next process will be saved in the next element
+                unsafeprocess[i]= 0;                                                // Change current process to completed
+
                 printmatrix();                                                      // Print Allocation, Need, Available, Max matrix                                                          
                 
                 return 1;                                                           // There was a change, return 1 (system is currently in safe state)
@@ -218,7 +259,6 @@ int checkstate(int safe){
     if (safe == 0){                                     //2.1 Checks if the system is in unsafe state           
         return 0;
     }
-
 
     if (sum > 1){                                       //2.2 Checks if the system is in safe state, but has not finished all processes
         return 1;
@@ -273,5 +313,28 @@ void printmatrix()
     }
 }
 
+int validateInput(int input, int min)
+{   
+    /*
+        Purpose of this function,
+        Is to validate if user input a number larger than the minimum requirement
+    */
 
+   // A While loop that will keep looping until user enter the correct requirement
+    while (1)
+    {   
+        // Check if user enter a number larger than the minimum requirement
+        if (min + 1 > input)
+        {
+            printf("\nPlease enter a number larger than %d\n", min);
+            scanf("%d", &input);
+        }
+        else
+        {
+            // Return input after validation and break off from the loop
+            return input;
+            break;
+        }
 
+    }
+}
