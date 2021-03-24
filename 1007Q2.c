@@ -47,14 +47,18 @@ int main(){
     }
 
     printf("\n");
+    printf("==================================================================================\n\n");
+    printf("You keyed in the follow processes: \n");
     for (i=0; i<processLength;i++){
         printf("P%d\t %d\n", i+1, processArray[i]);
     }
     printf("\n"); 
-
+    printf("==================================================================================\n\n");
     //Takes in the array and array length parameters to compute the 3 algorithms
     computeFirstFit(processArray, processLength);
+    printf("==================================================================================\n\n");
     computeWorstFit(processArray, processLength);
+    printf("==================================================================================\n\n");
     computeBestFit(processArray, processLength);
     return 0;
 }
@@ -92,11 +96,16 @@ int computeFirstFit(int p[], int pLength){
     //Displays the remaining memory partition in a table format for easy visualisation purposes.
     printf("\n");
     for (i = 0; i < 10; i++){ 
-        printf("%d\t\t%d\t",(i+1),p[i]); 
+        printf("P%d\t\t%d\t",(i+1),p[i]); 
         if (firstFitAllocArray[i] != -1) 
-            printf("%d\t\t%d\t\t%d\n",firstFitAllocArray[i] + 1, blockArray[firstFitAllocArray[i]], firstFitBlockArray[firstFitAllocArray[i]]);
+            printf("B%d\t\t%d\t\t%d\n",firstFitAllocArray[i] + 1, blockArray[firstFitAllocArray[i]], firstFitBlockArray[firstFitAllocArray[i]]);
         else
             printf("Not Allocated. This process needs to wait for a free block.\n");
+    }
+    printf("\n\n");
+    printf("First Fit - Final Remaining Memory Partition\n");
+    for (i = 0; i < 12; i++){
+            printf("B%d:%d   ", i+1, firstFitBlockArray[i]);
     }
     printf("\n\n");
 }
@@ -148,11 +157,16 @@ int computeWorstFit(int p[], int pLength){
     //Displays the remaining memory partition in a table format for easy visualisation purposes.
     printf("\n");
     for (i = 0; i < 10; i++){ 
-        printf(" %d\t\t%d\t",(i+1),p[i]); 
+        printf("P%d\t\t%d\t",(i+1),p[i]); 
         if (worstFitAllocArray[i] != -1) 
-            printf("%d\t\t%d\t\t%d\n",worstFitAllocArray[i] + 1, blockArray[worstFitAllocArray[i]], worstFitBlockArray[worstFitAllocArray[i]]); 
+            printf("B%d\t\t%d\t\t%d\n",worstFitAllocArray[i] + 1, blockArray[worstFitAllocArray[i]], worstFitBlockArray[worstFitAllocArray[i]]); 
         else
             printf("Not Allocated. This process needs to wait for a free block.\n");
+    }
+    printf("\n\n");
+    printf("Worst Fit - Final Remaining Memory Partition\n");
+    for (i = 0; i < 12; i++){
+            printf("B%d:%d   ", i+1, worstFitBlockArray[i]);
     }
     printf("\n\n");
 }   
@@ -205,11 +219,16 @@ int computeBestFit(int p[], int pLength){
     //Displays the remaining memory partition in a table format for easy visualisation purposes.
     printf("\n");
     for (i = 0; i < 10; i++){ 
-        printf(" %d\t\t%d\t",(i+1),p[i]); 
+        printf("P%d\t\t%d\t",(i+1),p[i]); 
         if (bestFitAllocArray[i] != -1) 
-            printf("%d\t\t%d\t\t%d\n",bestFitAllocArray[i] + 1, blockArray[bestFitAllocArray[i]], bestFitBlockArray[bestFitAllocArray[i]]); 
+            printf("B%d\t\t%d\t\t%d\n",bestFitAllocArray[i] + 1, blockArray[bestFitAllocArray[i]], bestFitBlockArray[bestFitAllocArray[i]]); 
         else
             printf("Not Allocated. This process needs to wait for a free block.\n");
+    }
+    printf("\n\n");
+    printf("Best Fit - Final Remaining Memory Partition\n");
+    for (i = 0; i < 12; i++){
+            printf("B%d:%d   ", i+1, bestFitBlockArray[i]);
     }
     printf("\n\n");
 }
