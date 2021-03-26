@@ -85,7 +85,6 @@ int computeFirstFit(int p[], int pLength) {
             if (p[i] <= firstFitBlockArray[j]) {
                 //Allocation Block number j to firstFitAllocArray[i] process
                 firstFitAllocArray[i] = j;
-
                 //Reduce the available memory in this particular block firstFitBlockArray[j]
                 firstFitBlockArray[j] -= p[i];
                 break;
