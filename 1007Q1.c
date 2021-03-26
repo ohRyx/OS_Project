@@ -324,7 +324,7 @@ int validateInput(int input, int min)
     while (1)
     {   
         // Check if user enter a number larger than the minimum requirement
-        if (min + 1 > input)
+        if (min > input)
         {
             printf("\nPlease enter a number larger than %d\n", min);
             scanf("%d", &input);
